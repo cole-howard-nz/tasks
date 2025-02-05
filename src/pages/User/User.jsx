@@ -41,23 +41,25 @@ export default function User()
             
             <p>User Page</p>
 
-            <div>
-                <input
-                    type="text"
-                    placeholder="New Task"
-                    value={ taskTitle }
-                    onChange={ (e) => setTaskTitle(e.target.value) }
-                />
-                <button onClick={ handleAddTask }>Add Task</button>
-            </div>
+            <section>
+                <div>
+                    <input
+                        type="text"
+                        placeholder="New Task"
+                        value={ taskTitle }
+                        onChange={ (e) => setTaskTitle(e.target.value) }
+                    />
+                    <button onClick={ handleAddTask }>Add Task</button>
+                </div>
 
-            <ul>
-                { tasks.map(task => (
-                    <li key={ task.id }>
-                        { task.title } <button onClick={ () => handleDeleteTask(task.id) }>❌</button>
-                    </li>
-                ))}
-            </ul>
+                <ul>
+                    { tasks.map(task => (
+                        <li key={ task.id }>
+                            { task.title } <button onClick={ () => handleDeleteTask(task.id) }>❌</button>
+                        </li>
+                    ))}
+                </ul>
+            </section>
         </div>
     );
 }

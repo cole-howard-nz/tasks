@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
-import { getFirestore, collection, addDoc, getDocs, query, where, deleteDoc, doc } from "firebase/firestore";
-export { auth, login, logout, addTask, getTasks, deleteTask, getAdmins, isAdmin };
+import { getFirestore, collection, addDoc, getDocs, updateDoc, query, where, deleteDoc, doc } from "firebase/firestore";
+export { auth, login, logout, addTask, getTasks, editTask, deleteTask, getAdmins, isAdmin };
 
 const firebaseConfig = 
 {
@@ -41,6 +41,22 @@ const getTasks = async (userId) =>
   const querySnapshot = await getDocs(q);
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
+
+const editTask = async (taskId, newTitle, completedStatus) => 
+{
+  const taskRef = doc(db, "tasks", taskId);
+  try 
+  {
+    await updateDoc(taskRef, 
+    {
+      title: newTitle, 
+      completed: completedStatus
+    });
+
+  } 
+  catch (error) {}
+};
+
 
 const getAdmins = async () =>
 {
