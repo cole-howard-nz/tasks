@@ -1,4 +1,9 @@
 
+:root 
+{
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
 .container
 {
 	margin: 32px auto auto auto;

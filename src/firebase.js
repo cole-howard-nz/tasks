@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 import { getFirestore, collection, addDoc, getDocs, query, where, deleteDoc, doc } from "firebase/firestore";
-export { auth, login, logout, addTask, getTasks, deleteTask };
+export { auth, login, logout, addTask, getTasks, deleteTask, getAdmins, isAdmin };
 
 const firebaseConfig = 
 {
@@ -42,4 +42,20 @@ const getTasks = async (userId) =>
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
+const getAdmins = async () =>
+{
+  const q = query(collection(db, "admins"));
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+};
 
+const isAdmin = async (userId) => 
+{
+  const q = query(collection(db, "admins"), where("userId", "==", userId));
+  const querySnapshot = await getDocs(q);
+
+  console.log("User ID:", userId);  // Debugging: Log the userId
+  console.log("Docs found:", querySnapshot.docs.map(doc => doc.data())); // Log the actual data
+  
+  return querySnapshot.docs.length > 0; // Returns true if at least one matching document is found
+};

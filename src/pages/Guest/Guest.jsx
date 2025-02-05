@@ -7,7 +7,7 @@ export default function Guest()
     return(
         <div className={ styles.container } >
             <Navbar />
-            
+
             <p>Guest Page</p>
         </div>
     );

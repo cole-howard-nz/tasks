@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth, login, logout } from "../../firebase.js";
+import { auth, login, logout, isAdmin } from "../../firebase.js";
 
 import styles from './Navbar.module.css'
 import Logo from '../Logo/Logo.jsx';
@@ -8,12 +8,50 @@ import Logo from '../Logo/Logo.jsx';
 export default function Navbar()
 {
     const [user, setUser] = useState(null);
+    const [MenuOpen, setMenuOpen] = useState(false);
+    const [isUserAdmin, setIsUserAdmin] = useState(false);
+
+    useEffect(() => onAuthStateChanged(auth, async (currentUser) => setUser(currentUser)), []);
 
     useEffect(() => 
     {
-        onAuthStateChanged(auth, async (currentUser) => setUser(currentUser));
+        onAuthStateChanged(auth, async (currentUser) => 
+        {
+            setUser(currentUser);
+            if (currentUser) 
+            {
+                const adminStatus = await isAdmin(currentUser.uid);
+                setIsUserAdmin(adminStatus);
+            } 
+            else
+                setIsUserAdmin(false);
+        });
     }, []);
-    
+
+    const handleInterfaceOpen = () => 
+    {
+        const UI = document.getElementById('hiddenInterface');
+        const LOGO = document.getElementById('profilePicture');
+        UI.style.opacity = 1;
+        LOGO.style.transform = 'scale(1.05)';
+
+        setMenuOpen(true);
+    };
+ 
+    const handleInterfaceClose = () => 
+    {
+        const UI = document.getElementById('hiddenInterface');
+        const LOGO = document.getElementById('profilePicture');
+
+        if (UI)
+            UI.style.opacity = 0;
+
+        if (LOGO)
+            LOGO.style.transform = 'scale(1)';
+
+        setMenuOpen(false);
+    };
+
     return(
         <header className={ styles.container }>
             <Logo />
@@ -22,13 +60,32 @@ export default function Navbar()
 
                 { user ? (
                     <>
-                        <h2>Welcome, {user.displayName}!</h2>
-                        <img 
+                        <img
+                            id="profilePicture"
                             src={user.photoURL} 
-                            alt="Profile" 
-                            style={{ width: "100px", borderRadius: "50%" }} 
+                            alt="Profile picture" 
+                            className={ styles.profilePicture }
+                            onClick={ MenuOpen ? handleInterfaceClose : handleInterfaceOpen }
                         />
-                        <button onClick={ logout }>Logout</button>
+
+                        <div 
+                            id="hiddenInterface"
+                            className={ styles.hiddenInterface }
+                        >
+                            { isUserAdmin ? (
+                                <div className={ styles.info }>
+                                    <p className={ styles.adminTag }>Admin</p>
+                                    <p className={ styles.name }>{ user.displayName } </p>
+                                </div>
+                            ) : (<p>{ user.displayName } </p>) }
+
+                            <div className={ styles.buttons }>
+                                <button className={ styles.button }>Export tasks</button>
+                                <button className={ styles.button }>Import tasks</button>
+                                <button className={ styles.button }>Delete all tasks</button>
+                                <button className={ styles.logoutButton }onClick={ logout }>Sign out</button>
+                            </div>
+                        </div>
                     </>
                 ) : (
                     <>
