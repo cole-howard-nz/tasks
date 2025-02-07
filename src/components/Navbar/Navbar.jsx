@@ -32,9 +32,11 @@ export default function Navbar()
     {
         const UI = document.getElementById('hiddenInterface');
         const LOGO = document.getElementById('profilePicture');
-        UI.style.opacity = 1;
-        LOGO.style.transform = 'scale(1.05)';
 
+        UI.style.opacity = 1;
+        UI.style.pointerEvents = "all";
+        LOGO.style.transform = 'scale(1.05)';
+        
         setMenuOpen(true);
     };
  
@@ -44,8 +46,11 @@ export default function Navbar()
         const LOGO = document.getElementById('profilePicture');
 
         if (UI)
+        {
             UI.style.opacity = 0;
-
+            UI.style.pointerEvents = "none";
+        }
+           
         if (LOGO)
             LOGO.style.transform = 'scale(1)';
 
@@ -83,7 +88,7 @@ export default function Navbar()
                                 <button className={ styles.button }>Export tasks</button>
                                 <button className={ styles.button }>Import tasks</button>
                                 <button className={ styles.button }>Delete all tasks</button>
-                                <button className={ styles.logoutButton }onClick={ logout }>Sign out</button>
+                                <button id="logoutButton" className={ styles.logoutButton } onClick={ logout }>Sign out</button>
                             </div>
                         </div>
                     </>

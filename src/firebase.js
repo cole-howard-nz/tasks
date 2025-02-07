@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 import { getFirestore, collection, addDoc, getDocs, updateDoc, query, where, deleteDoc, doc } from "firebase/firestore";
-export { auth, login, logout, addTask, getTasks, editTask, deleteTask, getAdmins, isAdmin };
+export { Task, auth, login, logout, addTask, getTasks, editTask, deleteTask, getAdmins, isAdmin };
 
 const firebaseConfig = 
 {
@@ -21,13 +21,29 @@ const auth = getAuth(app);
 
 
 
+class Task {
+  constructor(userId, title, description, dueDate) {
+    this.userId = userId;
+    this.title = title;
+    this.description = description;
+    this.timeCreated = new Date().toJSON().slice(0, 10);
+    this.dueDate = dueDate;
+  }
+}
+
 const login = () => signInWithPopup(auth, provider);
 
 const logout = () => signOut(auth);
 
-const addTask = async (userId, title) => 
+const addTask = async (task) => 
 {
-  await addDoc(collection(db, "tasks"), { userId, title, completed: false });
+  const newTask = new Task(
+    task.userId,
+    task.title,
+    task.description,
+    task.dueDate
+  );
+  await addDoc(collection(db, "tasks"), { ...newTask });
 };
 
 const deleteTask = async (taskId) => 
@@ -69,9 +85,5 @@ const isAdmin = async (userId) =>
 {
   const q = query(collection(db, "admins"), where("userId", "==", userId));
   const querySnapshot = await getDocs(q);
-
-  console.log("User ID:", userId);  // Debugging: Log the userId
-  console.log("Docs found:", querySnapshot.docs.map(doc => doc.data())); // Log the actual data
-  
-  return querySnapshot.docs.length > 0; // Returns true if at least one matching document is found
+  return querySnapshot.docs.length > 0;
 };
